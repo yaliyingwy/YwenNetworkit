@@ -73,7 +73,7 @@
     // Body part for the attachament.
     for (NSDictionary *fileDic in files) {
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", [fileDic objectForKey:@"field"], [fileDic objectForKey:@"name"]] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", [fileDic objectForKey:@"filed"], [fileDic objectForKey:@"name"]] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
         id file = [fileDic objectForKey:@"file"];
         id data = [fileDic objectForKey:@"data"];
@@ -149,6 +149,20 @@
 -(void)post:(NSString *)url params:(NSDictionary *)params contentType:(ContentType)contentType success:(void (^)(NSData *))success err:(void (^)(NSError *))err {
     NSURLSessionDataTask *task = [self request:url params:params method:POST contentType:contentType completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         WYLog(@"post url %@, params %@, result %@, error %@", url, params, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], error);
+        if (error == nil) {
+            success(data);
+        }
+        else if (err != nil)
+        {
+            err(error);
+        }
+    }];
+    [task resume];
+}
+
+-(void)post:(NSString *)url params:(NSDictionary *)params files:(NSArray *)files success:(void (^)(NSData *))success err:(void (^)(NSError *))err {
+    NSURLSessionDataTask *task = [self request:url params:params files:files completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        WYLog(@"post url %@, params %@, files %@, result %@, error %@", url, params, files, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], error);
         if (error == nil) {
             success(data);
         }

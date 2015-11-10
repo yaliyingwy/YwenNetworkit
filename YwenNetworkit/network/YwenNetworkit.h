@@ -40,6 +40,8 @@ typedef enum : NSUInteger {
 
 -(void) post:(NSString *) url params:(NSDictionary *) params contentType:(ContentType) contentType success:(void(^)(NSData *data)) success err:(void(^)(NSError *error)) err;
 
+-(void) post:(NSString *) url params:(NSDictionary *) params files:(NSArray *) files success:(void(^)(NSData *data)) success err:(void(^)(NSError *error)) err;
+
 -(void) get:(NSString *) url params:(NSDictionary *) params success:(void(^)(NSData *data)) success err:(void(^)(NSError *error)) err;
 
 
