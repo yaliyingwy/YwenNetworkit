@@ -39,14 +39,15 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         YwenNetworkit *net = [[YwenNetworkit alloc] init];
-        [net get:@"http://www.baidu.com" params:nil success:^(NSData *data) {
+        net.host = @"http://www.";
+        [net get:@"baidu.com" params:nil success:^(NSData *data) {
             NSLog(@"done--");
             _done = YES;
         } err:^(NSError *error) {
             NSLog(@"error %@", error);
             _done = YES;
         }];
-        [net cancelRequestWithUrl:@"baidu"];
+//        [net cancelRequestWithUrl:@"baidu"];
     });
     
     NSRunLoop *lp = [NSRunLoop currentRunLoop];

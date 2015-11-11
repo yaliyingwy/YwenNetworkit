@@ -54,6 +54,9 @@
 #pragma mark- task
 
 -(NSURLSessionDataTask *)request:(NSString *)url params:(NSDictionary *)params files:(NSArray *)files completionHandler:(void (^)(NSData * __nullable data, NSURLResponse * __nullable response, NSError * __nullable error))completionHandler{
+    if (![url hasPrefix:@"http"] && _host != nil) {
+        url = [_host stringByAppendingString: url];
+    }
     NSURL *u = [NSURL URLWithString:url];
     NSAssert(u, @"错误的url");
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:u];
@@ -112,6 +115,9 @@
 }
 
 -(NSURLSessionDataTask *)request:(NSString *)url params:(NSDictionary *)params method:(HttpMethod)method contentType:(ContentType)contentType completionHandler:(void (^)(NSData * _Nullable, NSURLResponse * _Nullable, NSError * _Nullable))completionHandler{
+    if (![url hasPrefix:@"http"] && _host != nil) {
+        url = [_host stringByAppendingString: url];
+    }
     NSURL *u = [NSURL URLWithString:url];
     NSAssert(u, @"错误的url");
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:u];

@@ -33,6 +33,7 @@ typedef enum : NSUInteger {
 @property (assign, nonatomic) NSTimeInterval timeout;
 @property (assign, nonatomic) NSInteger maxRequestCount;
 @property (strong, nonatomic) NSURLSessionConfiguration *config;
+@property (strong, nonatomic) NSString *host;  //必须http://开头
 
 
 -(NSURLSessionDataTask *) request:(NSString *) url params:(NSDictionary *) params files:(NSArray *) files completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
