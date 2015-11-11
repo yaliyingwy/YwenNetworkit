@@ -143,7 +143,7 @@
                 [postBody appendFormat:@"%@=%@&", [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]], [obj stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
             }];
             if (postBody.length > 0) {
-                [postBody deleteCharactersInRange:NSMakeRange(postBody.length, 1)];
+                [postBody deleteCharactersInRange:NSMakeRange(postBody.length-1, 1)];
             }
             [req addValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
             req.HTTPBody = [postBody dataUsingEncoding:NSUTF8StringEncoding];
