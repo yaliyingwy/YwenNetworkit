@@ -38,6 +38,18 @@
     _session = [NSURLSession sessionWithConfiguration:config];
 }
 
+-(void)setTimeout:(NSTimeInterval)timeout {
+    _timeout = timeout;
+    _config.timeoutIntervalForRequest = timeout;
+    self.config = _config;
+}
+
+-(void) setMaxRequestCount:(NSInteger)maxRequestCount {
+    _maxRequestCount = maxRequestCount;
+    _config.HTTPMaximumConnectionsPerHost = maxRequestCount;
+    self.config = _config;
+}
+
 
 #pragma mark- task
 
@@ -90,6 +102,8 @@
 
     [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     
+    req.HTTPBody = body;
+    
     [req addValue: [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
     
     // Setup the session
@@ -131,8 +145,8 @@
             if (postBody.length > 0) {
                 [postBody deleteCharactersInRange:NSMakeRange(postBody.length, 1)];
             }
+            [req addValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
             req.HTTPBody = [postBody dataUsingEncoding:NSUTF8StringEncoding];
-            [req addValue:@"application/octet-stream" forHTTPHeaderField:@"Content-Type"];
             break;
         }
             
@@ -149,13 +163,16 @@
 -(void)post:(NSString *)url params:(NSDictionary *)params contentType:(ContentType)contentType success:(void (^)(NSData *))success err:(void (^)(NSError *))err {
     NSURLSessionDataTask *task = [self request:url params:params method:POST contentType:contentType completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         WYLog(@"post url %@, params %@, result %@, error %@", url, params, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], error);
-        if (error == nil) {
-            success(data);
-        }
-        else if (err != nil)
-        {
-            err(error);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                success(data);
+            }
+            else if (err != nil)
+            {
+                err(error);
+            }
+        });
+       
     }];
     [task resume];
 }
@@ -163,13 +180,16 @@
 -(void)post:(NSString *)url params:(NSDictionary *)params files:(NSArray *)files success:(void (^)(NSData *))success err:(void (^)(NSError *))err {
     NSURLSessionDataTask *task = [self request:url params:params files:files completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         WYLog(@"post url %@, params %@, files %@, result %@, error %@", url, params, files, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], error);
-        if (error == nil) {
-            success(data);
-        }
-        else if (err != nil)
-        {
-            err(error);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                success(data);
+            }
+            else if (err != nil)
+            {
+                err(error);
+            }
+        });
+       
     }];
     [task resume];
 }
@@ -177,13 +197,16 @@
 -(void)get:(NSString *)url params:(NSDictionary *)params success:(void (^)(NSData *))success err:(void (^)(NSError *))err {
     NSURLSessionDataTask *task = [self request:url params:params method:GET contentType:FORM completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         WYLog(@"get url %@, params %@, result %@, error %@", url, params, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding], error);
-        if (error == nil) {
-            success(data);
-        }
-        else if(err != nil)
-        {
-            err(error);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                success(data);
+            }
+            else if(err != nil)
+            {
+                err(error);
+            }
+        });
+       
     }];
     [task resume];
 }
