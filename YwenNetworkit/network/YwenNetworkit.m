@@ -220,22 +220,28 @@
 
 #pragma mark- 取消请求
 -(void)cancelAllRequest {
-   [_session getAllTasksWithCompletionHandler:^(NSArray<__kindof NSURLSessionTask *> * _Nonnull tasks) {
-       for (NSURLSessionTask *task in tasks) {
-           [task cancel];
-       }
-   }];
-}
-
--(void) cancelRequestWithUrl:(NSString *)url {
-    [_session getAllTasksWithCompletionHandler:^(NSArray<__kindof NSURLSessionTask *> * _Nonnull tasks) {
-        for (NSURLSessionTask *task in tasks) {
-            NSString *orignUrl = task.originalRequest.URL.absoluteString;
-            WYLog(@"orignUrl %@, url %@", orignUrl, url);
-            if ([orignUrl containsString:url]) {
+    [_session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
+        for (NSArray *tasks in @[dataTasks, uploadTasks, downloadTasks]) {
+            for (NSURLSessionTask *task in tasks) {
                 [task cancel];
             }
         }
+        
+    }];
+}
+
+-(void) cancelRequestWithUrl:(NSString *)url {
+    [_session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
+        for (NSArray *tasks in @[dataTasks, uploadTasks, downloadTasks]) {
+            for (NSURLSessionTask *task in tasks) {
+                NSString *orignUrl = task.originalRequest.URL.absoluteString;
+                WYLog(@"orignUrl %@, url %@", orignUrl, url);
+                if ([orignUrl containsString:url]) {
+                    [task cancel];
+                }
+            }
+        }
+        
     }];
 }
 
