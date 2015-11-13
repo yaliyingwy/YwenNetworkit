@@ -7,6 +7,8 @@
 //
 
 #import "YwenNetworkit.h"
+#import "NSString+YwenNetExt.h"
+#import "NSDictionary+YwenNetExt.h"
 
 @implementation YwenNetworkit
 
@@ -70,7 +72,7 @@
     [params enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         // Body part for "deviceId" parameter. This is a string.
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", [key WY_UrlEncodedString]] dataUsingEncoding:NSUTF8StringEncoding]];
         
         NSString *content;
         if ([obj isKindOfClass:[NSString class]]) {
@@ -78,10 +80,10 @@
         }
         else
         {
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj options:NSJSONWritingPrettyPrinted error:nil];
             content = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         }
-        [body appendData:[[NSString stringWithFormat:@"%@\r\n", content] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [content WY_UrlEncodedString]] dataUsingEncoding:NSUTF8StringEncoding]];
     }];
    
     
@@ -144,15 +146,8 @@
             
         case FORM:
         {
-            NSMutableString *postBody = [NSMutableString new];
-            [params enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-                [postBody appendFormat:@"%@=%@&", [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]], [obj stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-            }];
-            if (postBody.length > 0) {
-                [postBody deleteCharactersInRange:NSMakeRange(postBody.length-1, 1)];
-            }
+            req.HTTPBody = [[params WY_UrlEncodedKeyValueString] dataUsingEncoding:NSUTF8StringEncoding];
             [req addValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-            req.HTTPBody = [postBody dataUsingEncoding:NSUTF8StringEncoding];
             break;
         }
             
