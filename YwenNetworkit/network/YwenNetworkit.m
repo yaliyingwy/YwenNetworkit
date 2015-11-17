@@ -72,7 +72,7 @@
     [params enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         // Body part for "deviceId" parameter. This is a string.
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", [key WY_UrlEncodedString]] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
         
         NSString *content;
         if ([obj isKindOfClass:[NSString class]]) {
@@ -83,7 +83,7 @@
             NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj options:NSJSONWritingPrettyPrinted error:nil];
             content = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         }
-        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [content WY_UrlEncodedString]] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", content] dataUsingEncoding:NSUTF8StringEncoding]];
     }];
    
     
